@@ -28,5 +28,5 @@ def print_weather(day):
 
 
 if __name__ == '__main__':
-    [print_weather(d) for d in get_weather(*COLS, num_days=10)]
+    _ = [print_weather(d) for d in get_weather(*COLS, num_days=10)]
     
