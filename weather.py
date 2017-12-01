@@ -13,7 +13,7 @@ def get_weather(lat, lng, start_date=None, num_days=1):
     @backoff.on_exception(
         backoff.expo,
         (requests.exceptions.Timeout, requests.exceptions.ConnectionError),
-        max_tries=4,
+        max_tries=5,
         giveup=fatal_code)
     def make_request(key, dte):
         accept_gzip = {'accept-encoding': 'gzip'}
@@ -28,12 +28,11 @@ def get_weather(lat, lng, start_date=None, num_days=1):
     key = environ.get('DARK_SKY_KEY')
     if start_date is None:
         start_date = datetime.today()
-    dates = [start_date + timedelta(days=d) for d in range(0, num_days)]
 
     if num_days == 1:
-        return make_request(key, dates.pop())
+        return make_request(key, start_date)
     else:
-        return [make_request(key, d) for d in dates]
+        return [make_request(key, start_date + timedelta(days=d)) for d in range(0, num_days)]
 
 
 def print_weather(response):
