@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import sqlite3
 
@@ -11,9 +11,8 @@ BEIJING = 39.954352, 116.466258
 db = sqlite3.connect('aqi.sqlite')
 ensure_db_exists(db)
 
-w = get_weather(*BEIJING)
-
-print_weather(w)
-add_weather(db, BEIJING, datetime.today(), w)
+w = get_weather(*BEIJING, start_date=datetime.today() + timedelta(-2), num_days=2)
+for i in w:
+    add_weather(db, BEIJING, i)
 
 db.commit()
