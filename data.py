@@ -20,20 +20,20 @@ def ensure_db_exists(data):
     data.execute(CREATE_WEATHER)
     data.execute(CREATE_WEATHER_INDEX)
 
+def get_timestamp(data_row):
+    epoch_seconds, tz_string = data_row['daily']['data'][0]['time'], data_row['timezone']
+    zone = timezone(tz_string)
+    stamp = datetime.fromtimestamp(epoch_seconds, zone)
+    return utc.normalize(stamp)
+
 def add_weather(data, location, value):
-    def to_utc(epoch_seconds, tz_string):
-        zone = timezone(tz_string)
-        stamp = datetime.fromtimestamp(epoch_seconds, zone)
-        return utc.normalize(stamp)
-
-    time_stamp = to_utc(value['daily']['data'][0]['time'], value['timezone'])
-
+    time_stamp = get_timestamp(data)
     with data:
         data.execute(INSERT_WEATHER,
                      (location[0], location[1], time_stamp, json.dumps(value)))
 
 def find_weather(data, lat, lng, ts):
-    return data.execute(SELECT_WEATHER, (lat, lng, ts))
+    return [json.loads(v[0]) for v in data.execute(SELECT_WEATHER, (lat, lng, ts)).fetchall()]
 
 def get_latest_weather(data, lat, lng):
     cursor = data.cursor()
