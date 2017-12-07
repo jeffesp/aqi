@@ -14,6 +14,6 @@ ensure_db_exists(db)
 w = get_weather(*BEIJING)
 
 print_weather(w)
-add_weather(db, BEIJING[0], BEIJING[1], datetime.today(), json.dumps(w))
+add_weather(db, BEIJING, datetime.today(), w)
 
 db.commit()
