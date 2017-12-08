@@ -41,7 +41,7 @@ def get_timestamp(epoch_seconds, tz_string):
     return utc.normalize(stamp)
 
 def add_weather(data, location, value):
-    time_stamp = get_timestamp(data)
+    time_stamp = get_timestamp(value['daily']['data'][0]['time'], value['timezone'])
     with data:
         data.execute(INSERT_WEATHER,
                      (location[0], location[1], time_stamp, json.dumps(value)))
@@ -57,8 +57,8 @@ def get_latest_weather(data, lat, lng):
     else:
         return None
 
-def add_air_quality(data, location, value):
-    time_stamp = get_timestamp(, data['timezone'])
+def add_air_quality(data, location, value, tz=None):
+    time_stamp = get_timestamp(value['date'], tz or data['timezone'])
     with data:
         data.execute(INSERT_AIR_QUALITY,
                      (location[0], location[1], time_stamp, json.dumps(value)))

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-import json
 import sqlite3
 
 from weather import get_weather
@@ -12,11 +11,12 @@ def import_data():
     db = sqlite3.connect('aqi.sqlite')
     ensure_db_exists(db)
 
-    latest = get_timestamp(get_latest_weather(db, *BEIJING))
+    last_weather = get_latest_weather(db, *BEIJING)
+    latest = get_timestamp(last_weather['daily']['data'][0]['time'], last_weather['timezone'])
 
-    w = get_weather(*BEIJING, start_date=latest+timedelta(days=1), num_days=(datetime.today - latest).days)
-    for i in w:
-        add_weather(db, BEIJING, i)
+    forecast = get_weather(*BEIJING, start_date=latest+timedelta(days=1), num_days=(datetime.today - latest).days)
+    for day in forecast:
+        add_weather(db, BEIJING, day)
 
     db.commit()
 
