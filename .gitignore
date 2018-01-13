@@ -108,3 +108,5 @@ venv.bak/
 
 .vscode
 aqi.sqlite
+
+*.swp
